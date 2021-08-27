@@ -12,9 +12,9 @@ class SpatieTagsInput extends TagsInput
     {
         parent::setUp();
 
-        $this->afterStateHydrated(function (SpatieTagsInput $component, ?Model $model, callable $setState, $state): void {
+        $this->afterStateHydrated(function (SpatieTagsInput $component, ?Model $model): void {
             if (! $model) {
-                $setState($component, []);
+                $component->state([]);
 
                 return;
             }
@@ -25,7 +25,7 @@ class SpatieTagsInput extends TagsInput
                 $tags = $model->tags;
             }
 
-            $setState($component, $tags->pluck('name'));
+            $component->state($tags->pluck('name'));
         });
 
         $this->dehydrated(false);
