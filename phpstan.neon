@@ -1,9 +1,0 @@
-parameters:
-    paths:
-        - src
-    level: 5
-    ignoreErrors:
-        - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$tags#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::syncTags\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::syncTagsWithType\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::tagsWithType\(\)#'
