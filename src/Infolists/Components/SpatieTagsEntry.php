@@ -1,12 +1,10 @@
 <?php
 
-namespace Filament\Tables\Columns;
+namespace Filament\Infolists\Components;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
-class SpatieTagsColumn extends TextColumn
+class SpatieTagsEntry extends TextEntry
 {
     protected ?string $type = null;
 
@@ -30,8 +28,14 @@ class SpatieTagsColumn extends TextColumn
 
         $record = $this->getRecord();
 
-        if ($this->queriesRelationships($record)) {
-            $record = $record->getRelationValue($this->getRelationshipName());
+        if (! $record) {
+            return [];
+        }
+
+        $relationshipName = $this->getRelationshipName();
+
+        if (filled($relationshipName)) {
+            $record = $record->getRelationValue($relationshipName);
         }
 
         if (! method_exists($record, 'tagsWithType')) {
@@ -54,18 +58,5 @@ class SpatieTagsColumn extends TextColumn
     public function getType(): ?string
     {
         return $this->type;
-    }
-
-    public function applyEagerLoading(Builder | Relation $query): Builder | Relation
-    {
-        if ($this->isHidden()) {
-            return $query;
-        }
-
-        if ($this->queriesRelationships($query->getModel())) {
-            return $query->with(["{$this->getRelationshipName()}.tags"]);
-        }
-
-        return $query->with(['tags']);
     }
 }
