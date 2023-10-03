@@ -2,21 +2,19 @@
 
 namespace Filament\Tables\Columns;
 
-use Closure;
-use Filament\SpatieLaravelTagsPlugin\Types\AllTagTypes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
-class SpatieTagsColumn extends TagsColumn
+class SpatieTagsColumn extends TextColumn
 {
-    protected string | Closure | AllTagTypes | null $type;
+    protected ?string $type = null;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->type(new AllTagTypes());
+        $this->badge();
     }
 
     /**
@@ -36,36 +34,26 @@ class SpatieTagsColumn extends TagsColumn
             $record = $record->getRelationValue($this->getRelationshipName());
         }
 
-        if (! (method_exists($record, 'tags') && method_exists($record, 'tagsWithType'))) {
+        if (! method_exists($record, 'tagsWithType')) {
             return [];
         }
 
         $type = $this->getType();
+        $tags = $record->tagsWithType($type);
 
-        if ($this->isAnyTagTypeAllowed()) {
-            $tags = $record->tags();
-        } else {
-            $tags = $record->tagsWithType($type);
-        }
-
-        return $tags->pluck('name')->all();
+        return $tags->pluck('name')->toArray();
     }
 
-    public function type(string | Closure | AllTagTypes | null $type): static
+    public function type(?string $type): static
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function getType(): string | AllTagTypes | null
+    public function getType(): ?string
     {
-        return $this->evaluate($this->type);
-    }
-
-    public function isAnyTagTypeAllowed(): bool
-    {
-        return $this->getType() instanceof AllTagTypes;
+        return $this->type;
     }
 
     public function applyEagerLoading(Builder | Relation $query): Builder | Relation
