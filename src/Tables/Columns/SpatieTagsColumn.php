@@ -34,37 +34,39 @@ class SpatieTagsColumn extends TextColumn
             return $state;
         }
 
-        $record = $this->getRecord();
+        return $this->cacheState(function (): array {
+            $record = $this->getRecord();
 
-        if ($this->hasRelationship($record)) {
-            $record = $this->getRelationshipResults($record);
-        }
-
-        $records = Arr::wrap($record);
-
-        $state = [];
-
-        foreach ($records as $record) {
-            /** @var Model $record */
-            if (! (method_exists($record, 'tags') && method_exists($record, 'tagsWithType'))) {
-                continue;
+            if ($this->hasRelationship($record)) {
+                $record = $this->getRelationshipResults($record);
             }
 
-            $type = $this->getType();
+            $records = Arr::wrap($record);
 
-            if ($this->isAnyTagTypeAllowed()) {
-                $tags = $record->getRelationValue('tags');
-            } else {
-                $tags = $record->tagsWithType($type);
+            $state = [];
+
+            foreach ($records as $record) {
+                /** @var Model $record */
+                if (! (method_exists($record, 'tags') && method_exists($record, 'tagsWithType'))) {
+                    continue;
+                }
+
+                $type = $this->getType();
+
+                if ($this->isAnyTagTypeAllowed()) {
+                    $tags = $record->getRelationValue('tags');
+                } else {
+                    $tags = $record->tagsWithType($type);
+                }
+
+                $state = [
+                    ...$state,
+                    ...$tags->pluck('name')->all(),
+                ];
             }
 
-            $state = [
-                ...$state,
-                ...$tags->pluck('name')->all(),
-            ];
-        }
-
-        return array_unique($state);
+            return array_unique($state);
+        });
     }
 
     public function type(string | AllTagTypes | Closure | null $type): static
