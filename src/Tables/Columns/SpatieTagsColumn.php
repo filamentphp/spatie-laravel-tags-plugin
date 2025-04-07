@@ -28,13 +28,13 @@ class SpatieTagsColumn extends TextColumn
      */
     public function getState(): array
     {
-        $state = parent::getState();
-
-        if ($state && (! $state instanceof Collection)) {
-            return $state;
-        }
-
         return $this->cacheState(function (): array {
+            $state = parent::getState();
+
+            if ($state && (! $state instanceof Collection)) {
+                return $state;
+            }
+
             $record = $this->getRecord();
 
             if ($this->hasRelationship($record)) {
