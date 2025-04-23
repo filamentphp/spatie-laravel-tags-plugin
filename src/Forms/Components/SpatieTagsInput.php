@@ -35,7 +35,7 @@ class SpatieTagsInput extends TagsInput
             $component->state($tags->pluck('name')->all());
         });
 
-        $this->saveRelationshipsUsing(static function (SpatieTagsInput $component, ?Model $record, array $state) {
+        $this->saveRelationshipsUsing(static function (SpatieTagsInput $component, ?Model $record, array $state): void {
             if (! (method_exists($record, 'syncTagsWithType') && method_exists($record, 'syncTags'))) {
                 return;
             }
@@ -69,7 +69,7 @@ class SpatieTagsInput extends TagsInput
 
         $tagClassName = config('tags.tag_model', Tag::class);
 
-        $tags = collect($state)->map(function ($tagName) use ($tagClassName) {
+        $tags = collect($state)->map(function (string $tagName) use ($tagClassName) { /** @phpstan-ignore argument.templateType */
             $locale = $tagClassName::getLocale();
 
             $tag = $tagClassName::findFromStringOfAnyType($tagName, $locale);
@@ -100,7 +100,7 @@ class SpatieTagsInput extends TagsInput
         }
 
         $model = $this->getModel();
-        $tagClass = $model ? $model::getTagClassName() : config('tags.tag_model', Tag::class);
+        $tagClass = ($model && method_exists($model, 'getTagClassName')) ? $model::getTagClassName() : config('tags.tag_model', Tag::class);
         $type = $this->getType();
         $query = $tagClass::query();
 
