@@ -38,8 +38,8 @@ class SpatieTagsEntry extends TextEntry
             return [];
         }
 
-        if ($this->hasStateRelationship($record)) {
-            $record = $this->getStateRelationshipResults($record);
+        if ($this->hasRelationship($record)) {
+            $record = $this->getRelationshipResults($record);
         }
 
         $records = Arr::wrap($record);
